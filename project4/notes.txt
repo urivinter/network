@@ -1,0 +1,59 @@
+models:
+
+    User:
+        ** posts: manytoone (ontomany? check) **
+        ** likes: manytoone (onetomany? check)**
+        followers: manytoone (onetomany? check)
+        follow: manytoone (onetomany? check)
+
+    Post:
+        poster foreignkey
+        content
+        timestamp auto
+        **likes foreignkey**
+
+    likes:
+        liker foreignkey
+        post_id foreignkey
+
+views:
+
+    All Posts: 
+
+        show all Posts:
+            post:
+                poster
+                timestamp
+                content
+                likes count
+                {button} like / unlike: @login required
+                    (update server)
+                    (update 'likes count')
+                username: 
+                    {link} to poster profile
+                {button} edit: @if post.poster is user (carefully - no other user)
+                    replace 'content' with {texterea}
+                    {button} Save 
+
+        {form} new post (maybe in seperate view) @login required
+        
+        {button} Next @if more then 10 posts
+        {button} Previous @if not on first page
+    
+    other user profile:
+
+        linked from: 
+            All Posts:
+                any posts username
+
+        count followers
+        count follows
+        all user posts reverse chronological
+        {button} follow/unfollow (not follow self) @login required
+
+    Following: @login required
+        
+        linked from:
+            NavBar
+        
+        "All Posts filtered"

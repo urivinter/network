@@ -1,0 +1,24 @@
+.new-post {
+    display: none;
+    position:fixed; 
+    width: 350px;
+    height: 250px;
+    top: 50%;
+    left: 50%;
+    margin-top: -125px;
+    margin-left: -175px;
+    padding: 15px;
+}
+
+.blured {
+    filter: blur(5px);
+}
+
+.visible {
+    display: block;
+}
+
+#post-new-post {
+    position: relative;
+    left: 255px;
+}
