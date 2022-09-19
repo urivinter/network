@@ -10,17 +10,20 @@ from django.db import models
 
 class User(AbstractUser):
 
-    followers = models.ForeignKey(
-        'User', 
-        on_delete=models.CASCADE , 
-        related_name='follows',
-        null=True
+    pic_src = models.CharField(
+        max_length=255, 
+        blank=True
     )
-    follow = models.ForeignKey(
+
+    followers = models.ManyToManyField(
+        'User',  
+        related_name='follows',
+        blank=True
+    )
+    follow = models.ManyToManyField(
         'User', 
-        on_delete=models.CASCADE, 
         related_name='followed',
-        null=True
+        blank=True
     )
 
 class Post(models.Model):
@@ -29,7 +32,7 @@ class Post(models.Model):
         on_delete=models.PROTECT, 
         related_name='posts'
     )
-    content = models.TextField(max_length=255)
+    content = models.TextField(max_length=1024)
     Timestamp = models.DateTimeField(auto_now_add=True)
 
 class Like(models.Model):

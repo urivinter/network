@@ -1,6 +1,7 @@
+import json
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.core.paginator import Paginator
@@ -8,6 +9,14 @@ from .models import User, Post, Like
 
 
 def index(request):
+    
+    if request.method == "POST":
+        data = json.loads(request.body)
+        posts = User.get(username=data.usr).posts
+        likes = {post.post_id: Like.objects.filter(post_id=post).count() for post in posts}
+        return JsonResponse({"posts": posts,  "likes": likes}, status=200)
+    else:
+        pass    
     return render(request, "network/index.html")
 
 
