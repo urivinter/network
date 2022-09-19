@@ -5,101 +5,65 @@
     <div class="container-fluid p-4">        
         <div class="container-fluid" id="page-container">
 
-            <!-- single post design -->
-            <div class="container-fluid" id="outer-container">
-                <div class="row">
-                    <div class="col-md-1 col-sm-2">
-                        <img src="https://picsum.photos/50.jpg" alt="profile image" class="rounded-circle">
-                    </div>
-                    <div class="col-md-11 col-sm-10">
-                        <div id="username">username</div>
-                        <span id="timesamp"><small>30 minutes ago</small></span>
-                        <p id="content">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
-                        <div id="post-footer">
-                            <span>
-                                <button class="btn btn-outline-dark btn-sm" style="border-style: none;"><i class="bi bi-heart"></i><span class="badge badge-light ml-2">24</span></button>
-                                <button class="btn btn-outline-dark btn-sm"><i class="bi bi-pencil"></i>    </span></button>
-                                
-                            </span>
+            {% for post, like in posts %}
+                <div class="container-fluid" id="outer-container">
+                    <div class="row">
+                        <div class="col-md-1 col-sm-2">
+                            <img src={{ post.poster.pic_src }} alt="profile image" class="rounded-circle">
+                        </div>
+                        <div class="col-md-11 col-sm-10">
+                            <div id="{{post.poster.username}}">{{post.poster.username}}</div>
+                            <span class="timestamp"><small>{{ post.timestamp }}</small></span>
+                            <p class="content">{{ post.content }}</p>
+                            <div id="post-footer">
+                                <span>
+                                    <button class="btn btn-outline-dark btn-sm like" style="border-style: none;">
+                                        <i class="bi bi-heart"></i>
+                                        <span class="badge badge-light ml-2">{{ like }}</span>
+                                    </button>
+                                    <button class="btn btn-outline-dark btn-sm edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>                          
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <hr>
-            <!-- single post design -->
-            <div class="container-fluid" id="outer-container">
-                <div class="row">
-                    <div class="col-md-1 col-sm-2">
-                        <img src="https://picsum.photos/50.jpg" alt="profile image" class="rounded-circle">
-                    </div>
-                    <div class="col-md-11 col-sm-10">
-                        <div id="username">username</div>
-                        <span id="timesamp"><small>30 minutes ago</small></span>
-                        <p id="content">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
-                        <div id="post-footer">
-                            <span>
-                                <button class="btn btn-outline-dark btn-sm"><i class="bi bi-heart"></i><span class="badge badge-light ml-2">4</span></button>
-                                <button class="btn btn-outline-dark btn-sm"><i class="bi bi-pencil"></i>    </span></button>
-                                
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <hr>
-            <!-- single post design -->
-            <div class="container-fluid" id="outer-container">
-                <div class="row">
-                    <div class="col-md-1 col-sm-2">
-                        <img src="https://picsum.photos/50.jpg" alt="profile image" class="rounded-circle">
-                    </div>
-                    <div class="col-md-11 col-sm-10">
-                        <div id="username">username</div>
-                        <span id="timesamp"><small>30 minutes ago</small></span>
-                        <p id="content">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
-                        <div id="post-footer">
-                            <span>
-                                <button class="btn btn-outline-dark btn-sm"><i class="bi bi-heart"></i><span class="badge badge-light ml-2">4</span></button>
-                                <button class="btn btn-outline-dark btn-sm"><i class="bi bi-pencil"></i>    </span></button>
-                                
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <hr>
+                <hr>
+            {% endfor %}
 
-            <!-- new post button -->
-            <button id="new-post-btn" type="button" class="btn btn-primary visible" style="width: 50px;
-            height: 50px;
-            position: fixed; 
-            border-radius: 60px;
-            font-size: 15px;
-            text-align: center;
-            top: 80%;
-            left: 85%;
-            margin-top: 0px;
-            margin-left: 0px;"><i class="bi bi-plus-lg"></i></button>
-  
-            <!-- pagination bar -->
-            <footer>
-                <nav aria-label="...">
-                    <ul class="pagination justify-content-center">
-                    <li class="page-item disabled">
-                        <a class="page-link" href="#" tabindex="-1">Previous</a>
-                    </li>
-                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item active">
-                        <a class="page-link" href="#">2 <span class="sr-only">(current)</span></a>
-                    </li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item">
-                        <a class="page-link" href="#">Next</a>
-                    </li>
-                    </ul>
-                </nav>
-            </footer>
         </div>
+        <!-- new post button -->
+        <button id="new-post-btn" type="button" class="btn btn-primary visible" style="width: 50px;
+        height: 50px;
+        position: fixed; 
+        border-radius: 60px;
+        font-size: 15px;
+        text-align: center;
+        top: 80%;
+        left: 85%;
+        margin-top: 0px;
+        margin-left: 0px;"><i class="bi bi-plus-lg"></i></button>
+
+        <!-- pagination bar -->
+        <footer>
+            <nav aria-label="...">
+                <ul class="pagination justify-content-center">
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1">Previous</a>
+                </li>
+                <li class="page-item"><a class="page-link" href="#">1</a></li>
+                <li class="page-item active">
+                    <a class="page-link" href="#">2 <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#">Next</a>
+                </li>
+                </ul>
+            </nav>
+        </footer>
+       
         <!-- popup new post design -->
         <div class="justify-content-bottom">
             <div class="new-post" >

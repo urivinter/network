@@ -5,19 +5,26 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.core.paginator import Paginator
-from .models import User, Post, Like
+from .models import User, Post, Like, Link
 
 
 def index(request):
-    
+    posts = []
     if request.method == "POST":
-        data = json.loads(request.body)
-        posts = User.get(username=data.usr).posts
-        likes = {post.post_id: Like.objects.filter(post_id=post).count() for post in posts}
-        return JsonResponse({"posts": posts,  "likes": likes}, status=200)
+        # following
+        usr = User.objects.get(username=request.user)
+        print(usr)
+        users = Link.objects.filter(user_id=usr).values('follows')
+        print(users)
+        posts = Post.objects.filter(poster__in=users)
     else:
-        pass    
-    return render(request, "network/index.html")
+        # all posts
+        posts = Post.objects.all()
+
+    likes = [Like.objects.filter(post_id=post.id).count() for post in posts]
+    return render(request, "network/index.html", {
+        "posts": zip(posts, likes)
+    }, status=200)
 
 
 def login_view(request):
@@ -72,4 +79,7 @@ def register(request):
         return render(request, "network/register.html")
 
 def profile(request, username):
+    # posts = User.get(username=data.usr).posts
+    # likes = {post.post_id: Like.objects.filter(post_id=post).count() for post in posts}
+    # return JsonResponse({"posts": posts,  "likes": likes}, status=200)
     return render(request, "network/profile.html")

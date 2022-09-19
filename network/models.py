@@ -1,4 +1,5 @@
 from importlib.resources import contents
+from operator import mod
 # from msilib import CAB
 from re import T
 from sqlite3 import Timestamp
@@ -15,16 +16,6 @@ class User(AbstractUser):
         blank=True
     )
 
-    followers = models.ManyToManyField(
-        'User',  
-        related_name='follows',
-        blank=True
-    )
-    follow = models.ManyToManyField(
-        'User', 
-        related_name='followed',
-        blank=True
-    )
 
 class Post(models.Model):
     poster = models.ForeignKey(
@@ -33,7 +24,7 @@ class Post(models.Model):
         related_name='posts'
     )
     content = models.TextField(max_length=1024)
-    Timestamp = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
 
 class Like(models.Model):
     post_id = models.ForeignKey(
@@ -45,4 +36,17 @@ class Like(models.Model):
         'User', 
         on_delete=models.CASCADE, 
         related_name='posts_liked'
+    )
+
+class Link(models.Model):
+    user_id = models.ForeignKey(
+        'User', 
+        on_delete=models.CASCADE, 
+        related_name="followers"
+    )
+
+    follows = models.ForeignKey(
+        'User', 
+        on_delete=models.CASCADE, 
+        related_name="followed"
     )

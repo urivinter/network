@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
-
-    console.log(document)
+    $("#profile-bar").hide()
+    console.log($(".profile")[0].dataset["usr"])
     const newPostToggle = function() {
         $("#page-container").toggleClass('blured')
         $(".new-post").toggleClass('visible')
