@@ -9,19 +9,23 @@
                 <div class="container-fluid" id="outer-container">
                     <div class="row">
                         <div class="col-md-1 col-sm-2">
-                            <img src={{ post.poster.pic_src }} alt="profile image" class="rounded-circle">
+                            <a href="/profile/{{post.poster.username}}">
+                                <img src={{ post.poster.pic_src }} alt="profile image" class="rounded-circle">
+                            </a>
                         </div>
                         <div class="col-md-11 col-sm-10">
-                            <div id="{{post.poster.username}}">{{post.poster.username}}</div>
+                            <a href="/profile/{{post.poster.username}}">
+                                <div id="{{post.poster.username}}">{{post.poster.username}}</div>
+                            </a>
                             <span class="timestamp"><small>{{ post.timestamp }}</small></span>
                             <p class="content">{{ post.content }}</p>
                             <div id="post-footer">
                                 <span>
-                                    <button class="btn btn-outline-dark btn-sm like" id="{{post.id}}" style="border-style: none;">
+                                    <button class="btn btn-outline btn-sm like" id="{{post.id}}" style="border-style: none;">
                                         <i class="bi bi-heart"></i>
                                         <span class="badge badge-light ml-2 likes-count">{{ like }}</span>
                                     </button>
-                                    <button class="btn btn-outline-dark btn-sm edit">
+                                    <button class="btn btn-outline btn-sm edit">
                                         <i class="bi bi-pencil"></i>
                                     </button>                          
                                 </span>

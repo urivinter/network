@@ -78,7 +78,36 @@ document.addEventListener('DOMContentLoaded', () => {
         
     }
 
+    const makePost = function(post_id, poster, timestamp, content, likes, img) {
+        const post = document.createElement("div");
+        post.classList.add("container-fluid");
+        post.setAttribute("id", "outer-container")
+        post.innerHTML = `<div class="row">
+                            <div class="col-md-1 col-sm-2">
+                                <a href="/profile/${poster}">
+                                    <img src="${img}" alt="profile pic" class="rounded-circle">
+                                </a>
+                            </div>
+                            <div class="col-md-11 col-sm-10">
+                                <a href="/profile/${poster}">
+                                    <div id="${poster}">${poster}</div>
+                                </a>  
+                                <span class="timesamp"><small>${timestamp}</small></span>
+                                <p class="content">${content}</p>
+                                <div id="post-footer">
+                                    <span>
+                                        <button class="btn btn-outline btn-sm like" id="${post_id}" style="border-style: none;">
+                                            <i class="bi bi-heart"></i><span class="badge badge-light ml-2 likes-count">${likes}</span>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>`
+        return post
+    }
 
+    
     const like = function(post_id, badge) {
         fetch('/', {
             method: 'POST',
@@ -95,30 +124,6 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log(err)
         })       
     }
-
-    const makePost = function(post_id, poster, timestamp, content, likes, img) {
-        const post = document.createElement("div");
-        post.classList.add("container-fluid");
-        post.setAttribute("id", "outer-container")
-        post.innerHTML = `<div class="row">
-                            <div class="col-md-1 col-sm-2">
-                                <img src="${img}" alt="profile pic" class="rounded-circle">
-                            </div>
-                            <div class="col-md-11 col-sm-10">
-                                <div id="${poster}">${poster}</div>
-                                <span class="timesamp"><small>${timestamp}</small></span>
-                                <p class="content">${content}</p>
-                                <div id="post-footer">
-                                    <span>
-                                        <button class="btn btn-outline-dark btn-sm like" id="${post_id}" style="border-style: none;"><i class="bi bi-heart"></i><span class="badge badge-light ml-2 likes-count">${likes}</span></button>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <hr>`
-        return post
-    }
-
 })
 
 
