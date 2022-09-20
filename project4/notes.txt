@@ -1,7 +1,7 @@
 models:
 
     User:
-        ** posts: manytoone (ontomany? check) **
+        ** posts: manytoone (ontomany? check) **hhhhhhhh
         ** likes: manytoone (onetomany? check)**
         followers: manytoone (onetomany? check)
         follow: manytoone (onetomany? check)

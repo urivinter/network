@@ -16,6 +16,14 @@ class User(AbstractUser):
         blank=True
     )
 
+    def serialize(self):
+        return {
+            "id": self.id,
+            "pic_src": self.pic_src,
+            "username": self.username
+        }
+
+
 
 class Post(models.Model):
     poster = models.ForeignKey(
@@ -25,6 +33,17 @@ class Post(models.Model):
     )
     content = models.TextField(max_length=1024)
     timestamp = models.DateTimeField(auto_now_add=True)
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "username": self.poster.username,
+            "pic_src": self.poster.pic_src, 
+            "likes": Like.objects.filter(post_id=self.id).count(),
+            "content": self.content,
+            "timestamp": self.timestamp.strftime("%b %d %Y, %I:%M %p")
+        }
+
 
 class Like(models.Model):
     post_id = models.ForeignKey(

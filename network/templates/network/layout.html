@@ -30,10 +30,7 @@
                     </li>
                     {% if user.is_authenticated %}
                         <li class="nav-item">
-                            <form method="post">
-                                {% csrf_token %}
-                                <button class="nav-link" type="submit" style="border-style: none; background-color: #f8f9fa;">Following</button>
-                            </form>
+                            <a class="nav-link following">Following</a>                         
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'logout' %}">Log Out</a>

@@ -17,9 +17,9 @@
                             <p class="content">{{ post.content }}</p>
                             <div id="post-footer">
                                 <span>
-                                    <button class="btn btn-outline-dark btn-sm like" style="border-style: none;">
+                                    <button class="btn btn-outline-dark btn-sm like" id="{{post.id}}" style="border-style: none;">
                                         <i class="bi bi-heart"></i>
-                                        <span class="badge badge-light ml-2">{{ like }}</span>
+                                        <span class="badge badge-light ml-2 likes-count">{{ like }}</span>
                                     </button>
                                     <button class="btn btn-outline-dark btn-sm edit">
                                         <i class="bi bi-pencil"></i>

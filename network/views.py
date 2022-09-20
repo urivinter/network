@@ -1,4 +1,5 @@
 import json
+
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
@@ -6,27 +7,41 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.core.paginator import Paginator
 from .models import User, Post, Like, Link
+from django.views.decorators.csrf import csrf_exempt
 
 
+@csrf_exempt
 def index(request):
-    posts = []
+    
     if request.method == "POST":
-        # following
-        usr = User.objects.get(username=request.user)
-        print(usr)
-        users = Link.objects.filter(user_id=usr).values('follows')
-        print(users)
-        posts = Post.objects.filter(poster__in=users)
-    else:
+        data = json.loads(request.body)
+        
+        post_id = int(data['post_id'])
+        if post_id:
+            # like button clicked
+            usr = User.objects.get(username=request.user)
+            post = Post.objects.get(id=post_id)
+            new_like = Like(post_id=post, liker_id=usr)
+            new_like.save()
+            like = Like.objects.filter(post_id=post).count()
+            print(like)
+            return JsonResponse({"like": like} , status=200)
+        else:
+            # following    
+            usr = User.objects.get(username=request.user)
+            users = Link.objects.filter(user_id=usr).values('follows')
+            entries = Post.objects.filter(poster__in=users)
+            posts = { str(i): entry.serialize() for i, entry in enumerate(entries)}
+            return JsonResponse(posts, status=200)
+    else: 
         # all posts
         posts = Post.objects.all()
+        likes = [Like.objects.filter(post_id=post.id).count() for post in posts]
+        return render(request, "network/index.html", {
+            "posts": zip(posts, likes)
+        }, status=200)
 
-    likes = [Like.objects.filter(post_id=post.id).count() for post in posts]
-    return render(request, "network/index.html", {
-        "posts": zip(posts, likes)
-    }, status=200)
-
-
+@csrf_exempt
 def login_view(request):
     if request.method == "POST":
 
@@ -78,8 +93,21 @@ def register(request):
     else:
         return render(request, "network/register.html")
 
+@csrf_exempt
 def profile(request, username):
-    # posts = User.get(username=data.usr).posts
-    # likes = {post.post_id: Like.objects.filter(post_id=post).count() for post in posts}
-    # return JsonResponse({"posts": posts,  "likes": likes}, status=200)
-    return render(request, "network/profile.html")
+    usr = User.objects.get(username=username)
+    posts = Post.objects.filter(poster=usr)
+    likes = [Like.objects.filter(post_id=post.id).count() for post in posts]
+    follow = Link.objects.filter(user_id=request.user, follows=usr)
+    followers = Link.objects.filter(follows=usr).count()
+    follows = Link.objects.filter(user_id = usr).count()
+    return render(request, "network/profile.html", {
+        "posts": zip(posts, likes), 
+        "follow": follow, 
+        "usr": usr, 
+        "followers": followers, 
+        "follows": follows
+    }, status=200)
+
+
+        
