@@ -2,6 +2,26 @@ document.addEventListener('DOMContentLoaded', () => {
     
     let start = 0 // page number    
     
+    $("#follow").click( () => {
+        follow = $("#follow").attr("data-follow")
+        fetch(`/api?follow=${follow}`)
+        .then(response => response.json())
+        .then((result) => {
+            $("#follow").toggle(600);
+            $("#unfollow").toggle(600);
+        })
+    })
+
+    $("#unfollow").click( () => {
+        unfollow = $("#unfollow").attr("data-unfollow")
+        fetch(`/api?unfollow=${unfollow}`)
+        .then(response => response.json())
+        .then((result) => {
+            $("#unfollow").toggle(600);
+            $("#follow").toggle(600);
+        })
+    })
+
     const like_listner = function() {
         $(".like").click((event) => {
             if (event.target.parentNode.tagName === 'BUTTON') {

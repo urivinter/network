@@ -101,7 +101,7 @@ def profile(request, username):
     likes = [Like.objects.filter(post_id=post.id).count() for post in posts]
     follow = Link.objects.filter(user_id=request.user, follows=usr)
     followers = Link.objects.filter(follows=usr).count()
-    follows = Link.objects.filter(user_id = usr).count()
+    follows = Link.objects.filter(user_id=usr).count()
     return render(request, "network/profile.html", {
         "posts": zip(posts, likes), 
         "follow": follow, 
@@ -110,5 +110,23 @@ def profile(request, username):
         "follows": follows
     }, status=200)
 
+def api(request):
+    if request.method != "GET":
+        return HttpResponse("Only GET requests are allowed")
+    follows = request.GET.get("follow")
+    if follows:
+        follows = User.objects.get(username=follows)
+        user_id = User.objects.get(username=request.user)
+        new_link = Link(user_id=user_id, follows=follows)
+        new_link.save()
+        return JsonResponse({}, status=200)
 
+    unfollow = request.GET.get("unfollow")
+    if unfollow:
+        user_id = User.objects.get(username=request.user)
+        follows = User.objects.get(username=unfollow)
+        Link.objects.filter(user_id=user_id, follows=follows).delete()
+        return JsonResponse({}, status=200)
+    pass
+    
         
