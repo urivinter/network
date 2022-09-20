@@ -19,9 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const container = document.querySelector("#page-container")
         container.innerHTML = "";
         get_posts();
-        $(".like").click((event) => {
-            like(event.target.id)
-        })
         return false
     })
 
@@ -83,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     const like = function(post_id, badge) {
-        fetch('', {
+        fetch('/', {
             method: 'POST',
             body: JSON.stringify({
                 post_id: post_id
