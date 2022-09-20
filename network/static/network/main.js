@@ -1,18 +1,29 @@
 document.addEventListener('DOMContentLoaded', () => {
     
-    const container = document.querySelector("#page-container")
-    // clear main div
+    let start = 0 // page number    
+    
+    const like_listner = function() {
+        $(".like").click((event) => {
+            if (event.target.parentNode.tagName === 'BUTTON') {
+                const btn = event.target.parentNode
+                like(btn.id, btn.querySelector("span"))
+            } else {
+                like(event.target.id, event.target.querySelector("span"))            
+            }
+        })
+    }
+
+    like_listner();
+
     $(".following").click( () => {
+        const container = document.querySelector("#page-container")
         container.innerHTML = "";
         get_posts();
         $(".like").click((event) => {
             like(event.target.id)
         })
-    
         return false
     })
-    
-
 
     const newPostToggle = function() {
         $("#page-container").toggleClass('blured')
@@ -36,34 +47,33 @@ document.addEventListener('DOMContentLoaded', () => {
         newPostToggle()
     });
 
-    $(".like").click((event) => {
-        if (event.target.parentNode.tagName === 'BUTTON') {
-            const btn = event.target.parentNode
-            like(btn.id, btn.querySelector("span"))
-        } else {
-            like(event.target.id, event.target.querySelector("span"))            
-        }
-    })
-
     const get_posts = function() {
         
-        fetch('', {method: 'POST'})
+        fetch('', {
+            method: 'POST', 
+            body: JSON.stringify({
+            start: start
+                })
+            })
         .then(response => response.json())
         .then((result) => {
             let i = 0;
             let post = null;
             while (post = result[i]) {
                 i++;
-                // result.forEach((post) => {
-                $("#page-container").append(makePost(
+                let new_post = makePost(
                     post.id, 
                     post.username, 
                     post.timestamp, 
                     post.content, 
                     post.likes, 
                     post.pic_src
-                    ))
+                    )
+                $("#page-container").append(new_post)
+                new_post.addEventListener('click', () => {
+                })
             };
+            like_listner();
         })
         .catch((err) => {
             console.log(err)

@@ -16,9 +16,10 @@ def index(request):
     if request.method == "POST":
         data = json.loads(request.body)
         
-        post_id = int(data['post_id'])
+        post_id = data.get('post_id')
         if post_id:
             # like button clicked
+            post_id = int(post_id)
             usr = User.objects.get(username=request.user)
             post = Post.objects.get(id=post_id)
             new_like = Like(post_id=post, liker_id=usr)
