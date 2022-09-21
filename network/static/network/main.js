@@ -3,8 +3,15 @@ document.addEventListener('DOMContentLoaded', () => {
     let start = 0 // page number    
     
     $("#follow").click( () => {
-        follow = $("#follow").attr("data-follow")
-        fetch(`/api?follow=${follow}`)
+        const user_id = $("#user").attr("data-user_id")
+        const follows_id = $("#follow").attr("data-follow")       
+        fetch("/api/follow", {
+            method: "POST", 
+            body: JSON.stringify({
+                user_id: user_id, 
+                follows_id: follows_id
+            })
+        })              
         .then(response => response.json())
         .then((result) => {
             $("#follow").toggle(600);
@@ -13,12 +20,16 @@ document.addEventListener('DOMContentLoaded', () => {
     })
 
     $("#unfollow").click( () => {
-        unfollow = $("#unfollow").attr("data-unfollow")
-        fetch(`/api?unfollow=${unfollow}`)
+        const user_id = $("#user").attr("data-user_id")
+        const follows_id = $("#unfollow").attr("data-unfollow")       
+        fetch("/api/unfollow", {
+            method: "POST", 
+            body: JSON.stringify({user_id: user_id, follows_id: follows_id})
+        })              
         .then(response => response.json())
         .then((result) => {
-            $("#unfollow").toggle(600);
             $("#follow").toggle(600);
+            $("#unfollow").toggle(600);
         })
     })
 
@@ -70,8 +81,8 @@ document.addEventListener('DOMContentLoaded', () => {
             method: 'POST', 
             body: JSON.stringify({
             start: start
-                })
             })
+        })
         .then(response => response.json())
         .then((result) => {
             let i = 0;

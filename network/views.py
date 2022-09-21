@@ -94,7 +94,7 @@ def register(request):
     else:
         return render(request, "network/register.html")
 
-@csrf_exempt
+
 def profile(request, username):
     usr = User.objects.get(username=username)
     posts = Post.objects.filter(poster=usr)
@@ -110,23 +110,29 @@ def profile(request, username):
         "follows": follows
     }, status=200)
 
-def api(request):
-    if request.method != "GET":
-        return HttpResponse("Only GET requests are allowed")
-    follows = request.GET.get("follow")
-    if follows:
-        follows = User.objects.get(username=follows)
-        user_id = User.objects.get(username=request.user)
-        new_link = Link(user_id=user_id, follows=follows)
-        new_link.save()
-        return JsonResponse({}, status=200)
+@csrf_exempt
+def api(request, action):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        print(data)
+        if action in ("follow", "unfollow"):
+            user_id = data["user_id"]
+            follows_id = data["follows_id"]
+            unfollow = True if action == "unfollow" else False
+            status = follow(user_id, follows_id, unfollow)
+            return JsonResponse({}, status=status)
 
-    unfollow = request.GET.get("unfollow")
+
+def follow(user_id, follows_id, unfollow=False):
+    user = User.objects.get(id=user_id)
+    follows = User.objects.get(id=follows_id)
+
     if unfollow:
-        user_id = User.objects.get(username=request.user)
-        follows = User.objects.get(username=unfollow)
-        Link.objects.filter(user_id=user_id, follows=follows).delete()
-        return JsonResponse({}, status=200)
-    pass
-    
-        
+        Link.objects.filter(user_id=user, follows=follows).delete()
+        status = 200
+    else:
+        new_link = Link(user_id=user, follows=follows)
+        new_link.save()
+        status = 200
+    return status
+

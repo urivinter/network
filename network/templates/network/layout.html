@@ -19,14 +19,14 @@
                 <ul class="navbar-nav mr-auto">
                     {% if user.is_authenticated %}
                         <li class="nav-item">
-                            <a class="nav-link profile" href="{% url 'profile' user.username %}" data-usr="{{ user.username }}">
+                            <a class="nav-link profile" href="{% url 'profile' user.username %}" id="user" data-user_id="{{ user.id }}">
                                 <strong>{{ user.username }}</strong>
                             </a>
                         </li>
 
                     {% endif %}
                     <li class="nav-item">
-                    <a class="nav-link" href="{% url 'index' %}">All Posts</a>
+                        <a class="nav-link" href="{% url 'index' %}">All Posts</a>
                     </li>
                     {% if user.is_authenticated %}
                         <li class="nav-item">

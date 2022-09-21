@@ -7,9 +7,9 @@
     
     {% if user != usr %}   
 
-        <div class="btn btn-outline-warning btn-sm" id="unfollow" data-unfollow="{{usr}}" {% if not follow %} style="display: none";{% endif %}>UnFollow</div>
+        <div class="btn btn-outline-warning btn-sm" id="unfollow" data-unfollow="{{usr.id}}" {% if not follow %} style="display: none";{% endif %}>UnFollow</div>
 
-        <div class="btn btn-outline-success btn-sm" id="follow" data-follow="{{usr}}" {% if follow %} style="display: none";{% endif %}>Follow</div>
+        <div class="btn btn-outline-success btn-sm" id="follow" data-follow="{{usr.id}}" {% if follow %} style="display: none";{% endif %}>Follow</div>
         
     {% endif %}
 </span>       
