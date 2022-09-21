@@ -1,14 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
-    
-    let start = 0 // page number    
+
+    const currentUserId = $("#user").attr("data-user_id")
+    const currentUserName = $("#user").attr("data-username")
+    let start = 1; // page number   
     
     $("#follow").click( () => {
-        const user_id = $("#user").attr("data-user_id")
         const follows_id = $("#follow").attr("data-follow")       
         fetch("/api/follow", {
             method: "POST", 
             body: JSON.stringify({
-                user_id: user_id, 
+                user_id: currentUserId, 
                 follows_id: follows_id
             })
         })              
@@ -20,11 +21,10 @@ document.addEventListener('DOMContentLoaded', () => {
     })
 
     $("#unfollow").click( () => {
-        const user_id = $("#user").attr("data-user_id")
         const follows_id = $("#unfollow").attr("data-unfollow")       
         fetch("/api/unfollow", {
             method: "POST", 
-            body: JSON.stringify({user_id: user_id, follows_id: follows_id})
+            body: JSON.stringify({user_id: currentUserId, follows_id: follows_id})
         })              
         .then(response => response.json())
         .then((result) => {
@@ -32,19 +32,6 @@ document.addEventListener('DOMContentLoaded', () => {
             $("#unfollow").toggle(600);
         })
     })
-
-    const like_listner = function() {
-        $(".like").click((event) => {
-            if (event.target.parentNode.tagName === 'BUTTON') {
-                const btn = event.target.parentNode
-                like(btn.id, btn.querySelector("span"))
-            } else {
-                like(event.target.id, event.target.querySelector("span"))            
-            }
-        })
-    }
-
-    like_listner();
 
     $(".following").click( () => {
         const container = document.querySelector("#page-container")
@@ -72,37 +59,57 @@ document.addEventListener('DOMContentLoaded', () => {
         newPostToggle()
     });
 
-    const get_posts = function() {
+    const get_posts = function(page) {
         
-        fetch('', {
-            method: 'POST', 
-            body: JSON.stringify({
-            start: start
-            })
-        })
+        fetch(`/?page=${page}`)
         .then(response => response.json())
         .then((result) => {
             let i = 0;
             let post = null;
-            while (post = result[i]) {
+            while (post = result.posts[i]) {
                 i++;
                 let new_post = makePost(
                     post.id, 
                     post.username, 
                     post.timestamp, 
                     post.content, 
-                    post.likes, 
+                    post.likes,
                     post.pic_src
                     )
                 $("#page-container").append(new_post)
+                const buttons = new_post.querySelector(".buttons")
+                const likeBtn = buttons.querySelector(".like")
+                const editBtn = buttons.querySelector(".edit")
+                if (post.username === currentUserName) {
+                    likeBtn.classList.add("disabled")
+                    editBtn.addEventListener('click', (event) => {
+                        editPost(event.target.dataset.post_id);
+                    })
+
+                } else {
+                    editBtn.remove()
+                    if (!post.liked) {
+                        likeBtn.addEventListener('click', (event) => {
+                            trgt = event.target
+                            if (trgt.classList.contains("like")) {
+                                like(trgt.dataset.post_id, trgt.querySelector(".badge"))
+                            } else {
+                                like(trgt.parentNode.dataset.post_id, trgt.parentNode.querySelector(".badge"))
+                            }
+                        })
+                    } else {
+                        likeBtn.classList.add("disabled")
+                    }
+                }
             };
-            like_listner();
         })
         .catch((err) => {
             console.log(err)
         });
-        
+        start++;
     }
+
+    get_posts(start);
 
     const makePost = function(post_id, poster, timestamp, content, likes, img) {
         const post = document.createElement("div");
@@ -121,10 +128,13 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <span class="timesamp"><small>${timestamp}</small></span>
                                 <p class="content">${content}</p>
                                 <div id="post-footer">
-                                    <span>
-                                        <button class="btn btn-outline btn-sm like" id="${post_id}" style="border-style: none;">
+                                    <span class="buttons">
+                                        <button class="btn btn-outline btn-sm like" data-post_id="${post_id}" style="border-style: none;">
                                             <i class="bi bi-heart"></i><span class="badge badge-light ml-2 likes-count">${likes}</span>
                                         </button>
+                                        <button class="btn btn-outline btn-sm edit" data-post_id="${post_id}">
+                                            <i class="bi bi-pencil"></i>
+                                        </button> 
                                     </span>
                                 </div>
                             </div>
@@ -159,6 +169,9 @@ document.addEventListener('DOMContentLoaded', () => {
             $('#new-post-text').focus() 
         }
     }
-})
 
+    const editPost = function (postId) {
+        console.log(`TODO: let ${currentUserName} edit post #${postId}`)
+    }
+})
 

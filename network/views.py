@@ -23,13 +23,18 @@ def index(request):
         entries = Post.objects.filter(poster__in=users)
         posts = { str(i): entry.serialize() for i, entry in enumerate(entries)}
         return JsonResponse(posts, status=200)
-    else: 
-        # all posts
-        posts = Post.objects.all()
-        likes = [Like.objects.filter(post_id=post.id).count() for post in posts]
-        return render(request, "network/index.html", {
-            "posts": zip(posts, likes)
-        }, status=200)
+
+    if request.method == "GET": 
+        if not request.GET.get("page"):
+            return render(request, "network/index.html", status=200)
+        
+        paginator = Paginator(Post.objects.all().order_by('-timestamp'), 10)
+        page = paginator.page(request.GET.get("page") or 1)
+        print(page.object_list[0])
+        posts = {i: post.serialize(request.user) for i, post in enumerate(page.object_list)}
+        return JsonResponse({"posts": posts, "previous": page.has_previous(), "next": page.has_next()}, status=200)
+        
+        
 
 @csrf_exempt
 def login_view(request):
@@ -98,6 +103,8 @@ def profile(request, username):
         "followers": followers, 
         "follows": follows
     }, status=200)
+
+
 
 
 @csrf_exempt
