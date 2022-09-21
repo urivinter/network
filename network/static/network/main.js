@@ -53,15 +53,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return false
     })
 
-    const newPostToggle = function() {
-        $("#page-container").toggleClass('blured')
-        $(".new-post").toggleClass('visible')
-        $("#new-post-btn").toggle()
-        if ($(".new-post").hasClass('visible')) {
-            $('#new-post-text').focus() 
-        }
-    }
-
     $("#new-post-btn").click(() => {
         newPostToggle()
     });
@@ -71,7 +62,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     $("#post-new-post").click(() => {
-        // TODO: add post
+        content = document.querySelector("#new-post-text").value
+        fetch('/api/post', {
+            method: 'POST', 
+            body: JSON.stringify({
+            content: content
+            })
+        })
         newPostToggle()
     });
 
@@ -98,8 +95,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     post.pic_src
                     )
                 $("#page-container").append(new_post)
-                new_post.addEventListener('click', () => {
-                })
             };
             like_listner();
         })
@@ -140,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     
     const like = function(post_id, badge) {
-        fetch('/', {
+        fetch('/api/like', {
             method: 'POST',
             body: JSON.stringify({
                 post_id: post_id
@@ -154,6 +149,15 @@ document.addEventListener('DOMContentLoaded', () => {
         .catch((err) => {
             console.log(err)
         })       
+    }
+
+    const newPostToggle = function() {
+        $("#page-container").toggleClass('blured')
+        $(".new-post").toggleClass('visible')
+        $("#new-post-btn").toggle()
+        if ($(".new-post").hasClass('visible')) {
+            $('#new-post-text').focus() 
+        }
     }
 })
 

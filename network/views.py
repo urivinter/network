@@ -1,3 +1,4 @@
+import http
 import json
 
 from django.contrib.auth import authenticate, login, logout
@@ -16,24 +17,12 @@ def index(request):
     if request.method == "POST":
         data = json.loads(request.body)
         
-        post_id = data.get('post_id')
-        if post_id:
-            # like button clicked
-            post_id = int(post_id)
-            usr = User.objects.get(username=request.user)
-            post = Post.objects.get(id=post_id)
-            new_like = Like(post_id=post, liker_id=usr)
-            new_like.save()
-            like = Like.objects.filter(post_id=post).count()
-            print(like)
-            return JsonResponse({"like": like} , status=200)
-        else:
-            # following    
-            usr = User.objects.get(username=request.user)
-            users = Link.objects.filter(user_id=usr).values('follows')
-            entries = Post.objects.filter(poster__in=users)
-            posts = { str(i): entry.serialize() for i, entry in enumerate(entries)}
-            return JsonResponse(posts, status=200)
+        # following    
+        usr = User.objects.get(username=request.user)
+        users = Link.objects.filter(user_id=usr).values('follows')
+        entries = Post.objects.filter(poster__in=users)
+        posts = { str(i): entry.serialize() for i, entry in enumerate(entries)}
+        return JsonResponse(posts, status=200)
     else: 
         # all posts
         posts = Post.objects.all()
@@ -110,20 +99,37 @@ def profile(request, username):
         "follows": follows
     }, status=200)
 
+
 @csrf_exempt
 def api(request, action):
-    if request.method == "POST":
-        data = json.loads(request.body)
-        print(data)
-        if action in ("follow", "unfollow"):
-            user_id = data["user_id"]
-            follows_id = data["follows_id"]
-            unfollow = True if action == "unfollow" else False
-            status = follow(user_id, follows_id, unfollow)
-            return JsonResponse({}, status=status)
+    if request.method != "POST":
+        return HttpResponse("This API supports POST method only")
+
+    data = json.loads(request.body)
+
+    if action in ("follow", "unfollow"):
+        user_id = data["user_id"]
+        follows_id = data["follows_id"]
+        unfollow = True if action == "unfollow" else False
+        status = new_follow(user_id, follows_id, unfollow)
+        return JsonResponse({}, status=status)
+
+    elif action == "like":
+        post_id = Post.objects.get(id=int(data["post_id"]))
+        liker_id = User.objects.get(username=request.user)
+        new_like = Like(post_id=post_id, liker_id=liker_id)
+        new_like.save()
+        like = Like.objects.filter(post_id=post_id).count()
+        return JsonResponse({"like": like} , status=200)
+    
+    elif action == "post":
+        poster = User.objects.get(username=request.user)
+        new_post = Post(poster=poster, content=data["content"])
+        new_post.save()
+        return JsonResponse({"like": like} , status=200)
 
 
-def follow(user_id, follows_id, unfollow=False):
+def new_follow(user_id, follows_id, unfollow=False):
     user = User.objects.get(id=user_id)
     follows = User.objects.get(id=follows_id)
 
