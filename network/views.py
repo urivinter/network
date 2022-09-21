@@ -30,7 +30,6 @@ def index(request):
         
         paginator = Paginator(Post.objects.all().order_by('-timestamp'), 10)
         page = paginator.page(request.GET.get("page") or 1)
-        print(page.object_list[0])
         posts = {i: post.serialize(request.user) for i, post in enumerate(page.object_list)}
         return JsonResponse({"posts": posts, "previous": page.has_previous(), "next": page.has_next()}, status=200)
         
@@ -131,9 +130,15 @@ def api(request, action):
     
     elif action == "post":
         poster = User.objects.get(username=request.user)
-        new_post = Post(poster=poster, content=data["content"])
-        new_post.save()
-        return JsonResponse({"like": like} , status=200)
+        post_id = data.get("post_id")
+        if post_id:
+            post = Post.objects.get(pk=post_id)
+            post.content = data.get("content")
+            post.save()
+        else:
+            new_post = Post(poster=poster, content=data["content"])
+            new_post.save()
+        return JsonResponse({} , status=200)
 
 
 def new_follow(user_id, follows_id, unfollow=False):

@@ -1,7 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    const currentUserId = $("#user").attr("data-user_id")
-    const currentUserName = $("#user").attr("data-username")
+    const currentUserId = $("#user").attr("data-user_id");
+    const currentUserName = $("#user").attr("data-username");
+    const textAreaPlaceholder = "Share your thoughts";
+    const textArea = $("#new-post-text")
+    textArea.attr("placeholder", textAreaPlaceholder)
     let start = 1; // page number   
     
     $("#follow").click( () => {
@@ -46,15 +49,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     $('#close-new-post').click(() => {
         newPostToggle()
+        textArea.attr("placeholder", textAreaPlaceholder)
+        textArea.val("")
+        $("#post-new-post").attr("data-post_id").remove()
     });
 
-    $("#post-new-post").click(() => {
-        content = document.querySelector("#new-post-text").value
+    $("#post-new-post").click((event) => {
+        const content = textArea.val()
+        const trgt = event.target.tagName === "I" ? event.target.parentNode : event.target;
+        const postId = trgt.dataset.post_id
+
         fetch('/api/post', {
             method: 'POST', 
             body: JSON.stringify({
-            content: content
+            content: content, 
+            post_id: postId
             })
+        })
+        .then(response => response.JSON)
+        .then((result) => {
+            textArea.attr("placeholder", textAreaPlaceholder)
+            textArea.val("")
+            $("#post-new-post").attr("data-post_id", "")
         })
         newPostToggle()
     });
@@ -83,14 +99,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (post.username === currentUserName) {
                     likeBtn.classList.add("disabled")
                     editBtn.addEventListener('click', (event) => {
-                        editPost(event.target.dataset.post_id);
+                        const trgt = event.target.tagName === "I" ? event.target.parentNode : event.target;
+                        const content = trgt.parentNode.parentNode.previousSibling.previousSibling.innerHTML
+                        editPost(trgt.dataset.post_id, content);
                     })
 
                 } else {
                     editBtn.remove()
                     if (!post.liked) {
                         likeBtn.addEventListener('click', (event) => {
-                            trgt = event.target
+                            const trgt = event.target
                             if (trgt.classList.contains("like")) {
                                 like(trgt.dataset.post_id, trgt.querySelector(".badge"))
                             } else {
@@ -106,7 +124,6 @@ document.addEventListener('DOMContentLoaded', () => {
         .catch((err) => {
             console.log(err)
         });
-        start++;
     }
 
     get_posts(start);
@@ -115,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const post = document.createElement("div");
         post.classList.add("container-fluid");
         post.setAttribute("id", "outer-container")
-        post.innerHTML = `<div class="row">
+        post.innerHTML = `<div class="row" data-post_id="${post_id}">
                             <div class="col-md-1 col-sm-2">
                                 <a href="/profile/${poster}">
                                     <img src="${img}" alt="profile pic" class="rounded-circle">
@@ -170,8 +187,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    const editPost = function (postId) {
-        console.log(`TODO: let ${currentUserName} edit post #${postId}`)
+    const editPost = function (postId, content) {
+        textArea.attr("placeholder", "");
+        textArea.val(content)
+        newPostToggle();
+        $("#post-new-post").attr("data-post_id", postId)
     }
+
 })
 
