@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 } else {
                     editBtn.remove()
-                    if (!post.liked) {
+                    if (post.liked == false) {
                         likeBtn.addEventListener('click', function clicked(event) {
                             const trgt = event.target
                             if (trgt.classList.contains("like")) {
@@ -116,8 +116,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         })
                     } else {
                         likeBtn.classList.add("disabled")
-                        likeBtn.querySelector("i").classList.remove("bi-heart")
-                        likeBtn.querySelector("i").classList.add("bi-heart-fill")
+                        if (post.liked != null) {
+                            likeBtn.querySelector("i").classList.remove("bi-heart")
+                            likeBtn.querySelector("i").classList.add("bi-heart-fill")
+                        }
                     }
                 }
             };

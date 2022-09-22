@@ -34,9 +34,12 @@ class Post(models.Model):
     content = models.TextField(max_length=1024)
     timestamp = models.DateTimeField(auto_now_add=True)
 
-    def serialize(self, request_user):
-        liker = User.objects.get(username=request_user)
-        liked = True if Like.objects.filter(post_id=self, liker_id=liker) else False
+    def serialize(self, request_user=None):
+        liked = None
+        if request_user:
+            liker = User.objects.get(username=request_user)
+            liked = True if Like.objects.filter(post_id=self, liker_id=liker) else False
+
         return {
             "id": self.id,
             "username": self.poster.username,

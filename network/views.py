@@ -16,6 +16,8 @@ def index(request):
     if request.method == "GET":
         page = request.GET.get("page")
         if page:
+            if not User.objects.filter(username=request.user):
+                return send_posts(None, page)      
             return send_posts(request.user, page)
         
         return render(request, "network/index.html", status=200)
@@ -23,7 +25,7 @@ def index(request):
 def follow(request):
     if request.method != "GET":
         return HttpResponse("GET method only")
-        
+
     page = request.GET.get("page")
     if page:
         return send_posts(request.user, page, None, True)
@@ -165,7 +167,11 @@ def send_posts(username, page=1, profile=None, follow=False):
         paginator = Paginator(Post.objects.all().order_by('-timestamp'), 10)
 
     page = paginator.page(page)
-    posts = {i: post.serialize(username) for i, post in enumerate(page.object_list)}
+    if username:
+        posts = {i: post.serialize(username) for i, post in enumerate(page.object_list)}
+    else:
+        posts = {i: post.serialize() for i, post in enumerate(page.object_list)}
+
     previous_page = page.has_previous() and page.previous_page_number()
     next_page = page.has_next() and page.next_page_number()
     return JsonResponse({"posts": posts, "previous": previous_page, "next": next_page}, status=200)

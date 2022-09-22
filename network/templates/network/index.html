@@ -8,16 +8,21 @@
 
         </div>
         <!-- new post button -->
-        <button id="new-post-btn" type="button" class="btn btn-primary visible" style="width: 50px;
-        height: 50px;
-        position: fixed; 
-        border-radius: 60px;
-        font-size: 15px;
-        text-align: center;
-        top: 80%;
-        left: 85%;
-        margin-top: 0px;
-        margin-left: 0px;"><i class="bi bi-plus-lg"></i></button>
+        
+        {% if user.is_authenticated %}
+                    
+            <button id="new-post-btn" type="button" class="btn btn-primary visible" style="width: 50px;
+            height: 50px;
+            position: fixed; 
+            border-radius: 60px;
+            font-size: 15px;
+            text-align: center;
+            top: 80%;
+            left: 85%;
+            margin-top: 0px;
+            margin-left: 0px;"><i class="bi bi-plus-lg"></i></button>
+
+        {% endif %}
 
         <!-- pagination bar -->
         <footer>
