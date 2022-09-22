@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const textAreaPlaceholder = "Share your thoughts";
     const textArea = $("#new-post-text")
     textArea.attr("placeholder", textAreaPlaceholder)
-    let start = 1; // page number   
+
     
     $("#follow").click( () => {
         const follows_id = $("#follow").attr("data-follow")       
@@ -75,8 +75,8 @@ document.addEventListener('DOMContentLoaded', () => {
         newPostToggle()
     });
 
-    const get_posts = function(page) {
-        
+    const get_posts = function(page=1) {
+        $("#page-container").html("")
         fetch(`/?page=${page}`)
         .then(response => response.json())
         .then((result) => {
@@ -107,26 +107,49 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     editBtn.remove()
                     if (!post.liked) {
-                        likeBtn.addEventListener('click', (event) => {
+                        likeBtn.addEventListener('click', function clicked(event) {
                             const trgt = event.target
                             if (trgt.classList.contains("like")) {
                                 like(trgt.dataset.post_id, trgt.querySelector(".badge"))
+                                trgt.removeEventListener('click', clicked)
                             } else {
                                 like(trgt.parentNode.dataset.post_id, trgt.parentNode.querySelector(".badge"))
+                                trgt.parentNode.removeEventListener('click', clicked)
                             }
                         })
                     } else {
                         likeBtn.classList.add("disabled")
+                      
                     }
                 }
             };
+            // pagination
+        
+            if (nextPage = result.next) {
+                $("#next").removeClass("disabled");
+                $("#next").click( () => {
+                    get_posts(nextPage)
+                })
+            } else {
+                $("#next").addClass("disabled").off();
+
+            }
+            if (previousPage = result.previous) {
+                $("#previous").removeClass("disabled").off();
+                $("#previous").click( () => {
+                    get_posts(previousPage)
+                })
+            } else {
+                $("#previous").addClass("disabled");
+            }
+
         })
         .catch((err) => {
             console.log(err)
         });
     }
 
-    get_posts(start);
+    get_posts();
 
     const makePost = function(post_id, poster, timestamp, content, likes, img) {
         const post = document.createElement("div");

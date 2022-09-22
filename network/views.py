@@ -31,7 +31,9 @@ def index(request):
         paginator = Paginator(Post.objects.all().order_by('-timestamp'), 10)
         page = paginator.page(request.GET.get("page") or 1)
         posts = {i: post.serialize(request.user) for i, post in enumerate(page.object_list)}
-        return JsonResponse({"posts": posts, "previous": page.has_previous(), "next": page.has_next()}, status=200)
+        previous_page = page.has_previous() and page.previous_page_number()
+        next_page = page.has_next() and page.next_page_number()
+        return JsonResponse({"posts": posts, "previous": previous_page, "next": next_page}, status=200)
         
         
 
