@@ -112,14 +112,19 @@ document.addEventListener('DOMContentLoaded', () => {
                             if (trgt.classList.contains("like")) {
                                 like(trgt.dataset.post_id, trgt.querySelector(".badge"))
                                 trgt.removeEventListener('click', clicked)
+                                likeBtn.querySelector("i").classList.remove("bi-heart")
+                                likeBtn.querySelector("i").classList.add("bi-heart-fill")
                             } else {
                                 like(trgt.parentNode.dataset.post_id, trgt.parentNode.querySelector(".badge"))
                                 trgt.parentNode.removeEventListener('click', clicked)
+                                likeBtn.querySelector("i").classList.remove("bi-heart")
+                                likeBtn.querySelector("i").classList.add("bi-heart-fill")
                             }
                         })
                     } else {
                         likeBtn.classList.add("disabled")
-                      
+                        likeBtn.querySelector("i").classList.remove("bi-heart")
+                        likeBtn.querySelector("i").classList.add("bi-heart-fill")
                     }
                 }
             };
