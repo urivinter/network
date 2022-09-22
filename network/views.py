@@ -24,18 +24,13 @@ def index(request):
         posts = { str(i): entry.serialize() for i, entry in enumerate(entries)}
         return JsonResponse(posts, status=200)
 
-    if request.method == "GET": 
-        if not request.GET.get("page"):
-            return render(request, "network/index.html", status=200)
+    if request.method == "GET":
+        page = request.GET.get("page")
+        if page:
+            return send_posts(request.user, page)
         
-        paginator = Paginator(Post.objects.all().order_by('-timestamp'), 10)
-        page = paginator.page(request.GET.get("page") or 1)
-        posts = {i: post.serialize(request.user) for i, post in enumerate(page.object_list)}
-        previous_page = page.has_previous() and page.previous_page_number()
-        next_page = page.has_next() and page.next_page_number()
-        return JsonResponse({"posts": posts, "previous": previous_page, "next": next_page}, status=200)
-        
-        
+        return render(request, "network/index.html", status=200)
+
 
 @csrf_exempt
 def login_view(request):
@@ -91,14 +86,18 @@ def register(request):
 
 
 def profile(request, username):
+    if request.method != "GET":
+        return HttpResponse("GET method only")
+    
+    page = request.GET.get("page")
+    if page:
+        return send_posts(request.user, page, username)
+    
     usr = User.objects.get(username=username)
-    posts = Post.objects.filter(poster=usr)
-    likes = [Like.objects.filter(post_id=post.id).count() for post in posts]
     follow = Link.objects.filter(user_id=request.user, follows=usr)
     followers = Link.objects.filter(follows=usr).count()
     follows = Link.objects.filter(user_id=usr).count()
     return render(request, "network/profile.html", {
-        "posts": zip(posts, likes), 
         "follow": follow, 
         "usr": usr, 
         "followers": followers, 
@@ -156,3 +155,19 @@ def new_follow(user_id, follows_id, unfollow=False):
         status = 200
     return status
 
+def send_posts(username, page=1, profile=None, follow=False):
+    if profile:
+        user = User.objects.get(username=profile)
+        paginator = Paginator(Post.objects.filter(poster=user).order_by('-timestamp'), 10)
+    elif follow:
+        user = User.objects.get(username=username)
+        users = Link.objects.filter(user_id=user).values('follows')
+        paginator = Paginator(Post.objects.filter(poster__in=users).order_by('-timestamp'), 10)
+    else:    
+        paginator = Paginator(Post.objects.all().order_by('-timestamp'), 10)
+
+    page = paginator.page(page)
+    posts = {i: post.serialize(username) for i, post in enumerate(page.object_list)}
+    previous_page = page.has_previous() and page.previous_page_number()
+    next_page = page.has_next() and page.next_page_number()
+    return JsonResponse({"posts": posts, "previous": previous_page, "next": next_page}, status=200)

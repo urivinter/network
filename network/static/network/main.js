@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const get_posts = function(page=1) {
         $("#page-container").html("")
-        fetch(`/?page=${page}`)
+        fetch(`?page=${page}`)
         .then(response => response.json())
         .then((result) => {
             let i = 0;
