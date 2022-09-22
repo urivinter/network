@@ -11,18 +11,7 @@ from .models import User, Post, Like, Link
 from django.views.decorators.csrf import csrf_exempt
 
 
-@csrf_exempt
 def index(request):
-    
-    if request.method == "POST":
-        data = json.loads(request.body)
-        
-        # following    
-        usr = User.objects.get(username=request.user)
-        users = Link.objects.filter(user_id=usr).values('follows')
-        entries = Post.objects.filter(poster__in=users)
-        posts = { str(i): entry.serialize() for i, entry in enumerate(entries)}
-        return JsonResponse(posts, status=200)
 
     if request.method == "GET":
         page = request.GET.get("page")
@@ -31,6 +20,15 @@ def index(request):
         
         return render(request, "network/index.html", status=200)
 
+def follow(request):
+    if request.method != "GET":
+        return HttpResponse("GET method only")
+        
+    page = request.GET.get("page")
+    if page:
+        return send_posts(request.user, page, None, True)
+    
+    return render(request, "network/follow.html", status=200)
 
 @csrf_exempt
 def login_view(request):

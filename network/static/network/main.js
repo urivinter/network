@@ -36,13 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
         })
     })
 
-    $(".following").click( () => {
-        const container = document.querySelector("#page-container")
-        container.innerHTML = "";
-        get_posts();
-        return false
-    })
-
     $("#new-post-btn").click(() => {
         newPostToggle()
     });
