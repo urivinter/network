@@ -5,7 +5,7 @@
     <small>Followers:</small><span class="badge badge-light mr-2">{{followers}}</span>
     <small>Follows:</small><span class="badge badge-light mr-2">{{follows}}</span>
     
-    {% if user != usr %}   
+    {% if user != usr and user.is_authenticated%}   
 
         <div class="btn btn-outline-warning btn-sm" id="unfollow" data-unfollow="{{usr.id}}" {% if not follow %} style="display: none";{% endif %}>UnFollow</div>
 
@@ -18,7 +18,7 @@
 
 
     </div>
-    
+
     <!-- pagination bar -->
     <footer>
         <nav aria-label="...">
@@ -32,5 +32,18 @@
             </ul>
         </nav>
     </footer>
+</div>
+
+<!-- popup new post design -->
+<div class="justify-content-bottom">
+    <div class="new-post" >
+        <div class="btn btn-outline-dark pr-1 pl-1 pt-0 pb-0 mb-2" id="close-new-post"><i class="bi bi-x-lg"></i></div>
+        <form id="new-post-form">
+            <div class="form-group">
+                <textarea class="form-control" id="new-post-text" placeholder="Share your thoughts" rows="7" data-post_id="new"></textarea>
+                <div class="btn btn-outline-primary m-2 pt-2 pb-1" id="post-new-post" style="border-radius: 50%;"><i class="bi bi-send"></i></div>
+            </div>
+        </form>
+    </div>
 </div>
 {% endblock %}

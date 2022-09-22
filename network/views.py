@@ -1,6 +1,6 @@
 import http
 import json
-
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
@@ -12,16 +12,18 @@ from django.views.decorators.csrf import csrf_exempt
 
 
 def index(request):
+    if request.method != "GET":
+        return HttpResponse("GET method only")
+    
+    page = request.GET.get("page")
+    if page:
+        if not User.objects.filter(username=request.user):
+            return send_posts(None, page)      
+        return send_posts(request.user, page)
+    
+    return render(request, "network/index.html", status=200)
 
-    if request.method == "GET":
-        page = request.GET.get("page")
-        if page:
-            if not User.objects.filter(username=request.user):
-                return send_posts(None, page)      
-            return send_posts(request.user, page)
-        
-        return render(request, "network/index.html", status=200)
-
+@login_required
 def follow(request):
     if request.method != "GET":
         return HttpResponse("GET method only")
@@ -89,12 +91,18 @@ def profile(request, username):
     if request.method != "GET":
         return HttpResponse("GET method only")
     
+    current_user = User.objects.filter(username=request.user)
     page = request.GET.get("page")
     if page:
+        if not current_user:
+            return send_posts(None, page, username) 
         return send_posts(request.user, page, username)
     
     usr = User.objects.get(username=username)
-    follow = Link.objects.filter(user_id=request.user, follows=usr)
+    if current_user:
+        follow = Link.objects.filter(user_id=request.user, follows=usr)
+    else:
+        follow = None
     followers = Link.objects.filter(follows=usr).count()
     follows = Link.objects.filter(user_id=usr).count()
     return render(request, "network/profile.html", {

@@ -135,12 +135,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             }
             if (previousPage = result.previous) {
-                $("#previous").removeClass("disabled").off();
+                $("#previous").removeClass("disabled");
                 $("#previous").click( () => {
                     get_posts(previousPage)
                 })
             } else {
-                $("#previous").addClass("disabled");
+                $("#previous").addClass("disabled").off();
             }
 
         })
