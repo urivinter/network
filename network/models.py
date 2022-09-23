@@ -16,16 +16,9 @@ class User(AbstractUser):
         blank=True
     )
 
-    def serialize(self):
-        return {
-            "id": self.id,
-            "pic_src": self.pic_src,
-            "username": self.username
-        }
-
-
 
 class Post(models.Model):
+
     poster = models.ForeignKey(
         'User', 
         on_delete=models.PROTECT, 
@@ -34,9 +27,11 @@ class Post(models.Model):
     content = models.TextField(max_length=1024)
     timestamp = models.DateTimeField(auto_now_add=True)
 
-    def serialize(self, request_user=None):
-        liked = None
-        if request_user:
+    def serialize(self, request_user):
+        
+        liked = None  # in case of anonymouse user
+        
+        if request_user.is_authenticated:
             liker = User.objects.get(username=request_user)
             liked = True if Like.objects.filter(post_id=self, liker_id=liker) else False
 
@@ -52,18 +47,22 @@ class Post(models.Model):
 
 
 class Like(models.Model):
+
     post_id = models.ForeignKey(
         'Post', 
         on_delete=models.CASCADE, 
         related_name='liking_users'
     )
+
     liker_id = models.ForeignKey(
         'User', 
         on_delete=models.CASCADE, 
         related_name='posts_liked'
     )
 
+
 class Link(models.Model):
+    
     user_id = models.ForeignKey(
         'User', 
         on_delete=models.CASCADE, 

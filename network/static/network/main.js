@@ -1,36 +1,33 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    const currentUserId = $("#user").attr("data-user_id");
-    const currentUserName = $("#user").attr("data-username");
+    const currentUserName = $("#user > strong").html();
     const textAreaPlaceholder = "Share your thoughts";
     const textArea = $("#new-post-text")
     textArea.attr("placeholder", textAreaPlaceholder)
 
-    
     $("#follow").click( () => {
-        const follows_id = $("#follow").attr("data-follow")       
+        const follows_name = $("#profileUsername").html()      
         fetch("/api/follow", {
             method: "POST", 
             body: JSON.stringify({
-                user_id: currentUserId, 
-                follows_id: follows_id
+                follows_name: follows_name
             })
         })              
         .then(response => response.json())
-        .then((result) => {
+        .then(() => {
             $("#follow").toggle(600);
             $("#unfollow").toggle(600);
         })
     })
 
     $("#unfollow").click( () => {
-        const follows_id = $("#unfollow").attr("data-unfollow")       
+        const follows_name = $("#profileUsername").html()       
         fetch("/api/unfollow", {
             method: "POST", 
-            body: JSON.stringify({user_id: currentUserId, follows_id: follows_id})
+            body: JSON.stringify({follows_name: follows_name})
         })              
         .then(response => response.json())
-        .then((result) => {
+        .then(() => {
             $("#follow").toggle(600);
             $("#unfollow").toggle(600);
         })
@@ -68,11 +65,13 @@ document.addEventListener('DOMContentLoaded', () => {
         newPostToggle()
     });
 
+
     const get_posts = function(page=1) {
-        $("#page-container").html("")
+        console.log(document.URL)
         fetch(`?page=${page}`)
         .then(response => response.json())
         .then((result) => {
+            $("#page-container").html("")
             let i = 0;
             let post = null;
             while (post = result.posts[i]) {
@@ -123,11 +122,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
             };
+            
             // pagination
-        
+            $("#next > a").attr("data-page", page);
+            $("#previous > a").attr("data-page", page);
             if (nextPage = result.next) {
                 $("#next").removeClass("disabled");
-                $("#next").click( () => {
+                $("#next").click( (event) => {
+                    // history.pushState({page: event.target.dataset["page"]}, '');
                     get_posts(nextPage)
                 })
             } else {
@@ -136,7 +138,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if (previousPage = result.previous) {
                 $("#previous").removeClass("disabled");
-                $("#previous").click( () => {
+                $("#previous").click( (event) => {
+                    // history.pushState({page: event.target.dataset["page"]}, '');
                     get_posts(previousPage)
                 })
             } else {
@@ -147,6 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .catch((err) => {
             console.log(err)
         });
+
     }
 
     get_posts();
@@ -182,8 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <hr>`
         return post
     }
-
-    
+  
     const like = function(post_id, badge) {
         fetch('/api/like', {
             method: 'POST',
@@ -193,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .then(response => response.json())
         .then((result) => {
-            badge.innerHTML = result.like;
+            badge.innerHTML = result.likeCount;
             $(`#${post_id}`).attr('disabled', 'true')
         })
         .catch((err) => {

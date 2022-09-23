@@ -1,6 +1,9 @@
 {% extends "network/layout.html" %}
 
 {% block body %}
+<div class="ml-3">
+    Profile of <i id="profileUsername">{{ usr }}</i>
+</div>
 <span class="ml-3">
     <small>Followers:</small><span class="badge badge-light mr-2">{{followers}}</span>
     <small>Follows:</small><span class="badge badge-light mr-2">{{follows}}</span>

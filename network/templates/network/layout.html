@@ -17,9 +17,9 @@
                 <h3 class="nav-brand mr-2">Network</h3>
           
                 <ul class="navbar-nav mr-auto">
-                    {% if user.is_authenticated %}
+                    {% if user.is_authenticated %} 
                         <li class="nav-item">
-                            <a class="nav-link profile" href="{% url 'profile' user.username %}" id="user" data-user_id="{{ user.id }}" data-username="{{ user.username }}">
+                            <a class="nav-link profile" href="{% url 'profile' user.username %}" id="user">
                                 <strong>{{ user.username }}</strong>
                             </a>
                         </li>
